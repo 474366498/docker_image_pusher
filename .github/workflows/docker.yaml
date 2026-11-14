@@ -52,8 +52,19 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v5
 
-    - name: Docker Setup Buildx
-      uses: docker/setup-buildx-action@v4
+    #- name: Docker Setup Buildx
+    #  uses: docker/setup-buildx-action@v4
+    - name: Login to Aliyun ACR (with retry)
+      uses: nick-fields/retry@v4
+      with:
+        max_attempts: 3
+        retry_wait_seconds: 10
+        timeout_seconds: 60
+        shell: bash
+        command: |
+          echo "$ALIYUN_REGISTRY_PASSWORD" | docker login \
+            --username "$ALIYUN_REGISTRY_USER" \
+            --password-stdin "$ALIYUN_REGISTRY"
 
     - name: Build and push image Aliyun
       run: |
